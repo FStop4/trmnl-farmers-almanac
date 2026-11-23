@@ -1,0 +1,7 @@
+.env
+.trmnlp.local*
+*.local
+.DS_Store
+__pycache__/
+site/
+gaz.zip

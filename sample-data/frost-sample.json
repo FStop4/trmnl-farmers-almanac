@@ -1,0 +1,11 @@
+{
+  "zip": "12345",
+  "last_frost": "04-20",
+  "first_frost": "10-20",
+  "season_days": 183,
+  "station": "Example Airport",
+  "station_id": "USW00000000",
+  "distance_mi": 12.3,
+  "low_confidence": false,
+  "source": "SYNTHETIC SAMPLE"
+}

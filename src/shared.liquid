@@ -1,0 +1,69 @@
+{% comment %}Shared setup, prepended to every layout. IDX_0 = NOAA frost JSON, IDX_1 = Open-Meteo (optional). Frost dates: manual override > polled NOAA data > generic default.{% endcomment %}
+{% assign ts = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset %}
+{% assign today = ts | date: "%j" | plus: 0 %}
+{% assign yr = ts | date: "%Y" %}
+{% assign cf = trmnl.plugin_settings.custom_fields_values %}
+{% assign lfv = cf.last_frost_override | default: IDX_0.last_frost | default: "04-15" %}
+{% assign ffv = cf.first_frost_override | default: IDX_0.first_frost | default: "10-25" %}
+{% assign sp = IDX_0.station | split: "," %}
+{% assign st_name = sp[0] | strip %}
+{% assign st_state = sp[1] | remove: " Us" | remove: " US" | strip | upcase %}
+{% if st_state != blank %}{% assign st_full = st_name | append: ", " | append: st_state %}{% else %}{% assign st_full = st_name %}{% endif %}
+{% assign place = cf.region_label | default: st_full | default: "Your area" %}
+{% assign lf = yr | append: "-" | append: lfv | date: "%j" | plus: 0 %}
+{% assign ff = yr | append: "-" | append: ffv | date: "%j" | plus: 0 %}
+{% assign lfd = yr | append: "-" | append: lfv | date: "%b %-d" %}
+{% assign ffd = yr | append: "-" | append: ffv | date: "%b %-d" %}
+{% assign jan1 = yr | append: "-01-01" | date: "%s" | plus: 0 %}
+{% assign dlf = lf | minus: today %}{% if dlf < 0 %}{% assign dlf = dlf | plus: 365 %}{% endif %}
+{% assign dff = ff | minus: today %}{% if dff < 0 %}{% assign dff = dff | plus: 365 %}{% endif %}
+{% if dff > dlf %}{% assign hero_n = dlf %}{% assign hero_label = "Last frost" %}{% assign hero_date = lfd %}{% assign frost_state = "Frost possible" %}{% else %}{% assign hero_n = dff %}{% assign hero_label = "First frost" %}{% assign hero_date = ffd %}{% assign frost_state = "Frost-free" %}{% endif %}
+{% comment %}Weather (Open-Meteo). Lines stay blank if lat/long are missing or the call failed.{% endcomment %}
+{% assign frost_alert = "" %}{% assign wx_line = "" %}{% assign sun_line = "" %}{% assign soil_i = nil %}
+{% assign low = IDX_1.daily.temperature_2m_min[1] %}
+{% assign soil = IDX_1.hourly.soil_temperature_6cm[0] %}
+{% if low != nil %}{% assign low_i = low | round %}{% assign wx_line = "Low " | append: low_i | append: "F" %}{% if low_i <= 32 %}{% assign frost_alert = "Frost tonight" %}{% elsif low_i <= 36 %}{% assign frost_alert = "Near-frost tonight" %}{% endif %}{% endif %}
+{% if soil != nil %}{% assign soil_i = soil | round %}{% if wx_line != "" %}{% assign wx_line = wx_line | append: " · " %}{% endif %}{% assign wx_line = wx_line | append: "Soil " | append: soil_i | append: "F" %}{% endif %}
+{% assign sr = IDX_1.daily.sunrise[0] %}{% assign ss = IDX_1.daily.sunset[0] %}
+{% if sr != nil %}{% assign sr_t = sr | date: "%-I:%M" %}{% assign ss_t = ss | date: "%-I:%M" %}{% assign sun_line = "Sun " | append: sr_t | append: " - " | append: ss_t %}{% endif %}
+{% comment %}Moon phase from a known new moon (2000-01-06) and the 29.53-day cycle. Planting by the moon is folklore.{% endcomment %}
+{% assign mage = trmnl.system.timestamp_utc | minus: 947182440 | modulo: 2551443 | divided_by: 86400.0 %}
+{% if mage < 1.85 or mage >= 27.68 %}{% assign moon = "New moon" %}{% elsif mage < 5.54 %}{% assign moon = "Waxing crescent" %}{% elsif mage < 9.22 %}{% assign moon = "First quarter" %}{% elsif mage < 12.91 %}{% assign moon = "Waxing gibbous" %}{% elsif mage < 16.61 %}{% assign moon = "Full moon" %}{% elsif mage < 20.3 %}{% assign moon = "Waning gibbous" %}{% elsif mage < 23.99 %}{% assign moon = "Last quarter" %}{% else %}{% assign moon = "Waning crescent" %}{% endif %}
+{% if mage >= 1.85 and mage < 14.77 %}{% assign moon_tip = "leafy crops" %}{% elsif mage >= 14.77 and mage < 27.68 %}{% assign moon_tip = "root crops" %}{% else %}{% assign moon_tip = "rest day" %}{% endif %}
+{% assign moon_line = "Moon: " | append: moon | append: " · " | append: moon_tip %}
+{% comment %}Moon zodiac sign: approximate ecliptic longitude (mean elements + two largest corrections, roughly 1-2 degrees). sin() uses a rational approximation.{% endcomment %}
+{% assign dj = trmnl.system.timestamp_utc | minus: 946728000 | divided_by: 86400.0 %}
+{% assign mLp = dj | times: 13.176396 | plus: 218.316 | modulo: 360 %}
+{% assign mMa = dj | times: 13.064993 | plus: 134.963 | modulo: 360 %}
+{% assign mDd = dj | times: 12.190749 | plus: 297.85 | modulo: 360 %}
+{% assign mA2 = mDd | times: 2 | minus: mMa | plus: 720 | modulo: 360 %}
+{% assign x = mMa %}{% assign sg = 1 %}{% if x > 180 %}{% assign x = x | minus: 180 %}{% assign sg = -1 %}{% endif %}{% assign q = 180 | minus: x | times: x %}{% assign den = 40500 | minus: q %}{% assign sa = q | times: 4 | divided_by: den | times: sg %}
+{% assign x = mA2 %}{% assign sg = 1 %}{% if x > 180 %}{% assign x = x | minus: 180 %}{% assign sg = -1 %}{% endif %}{% assign q = 180 | minus: x | times: x %}{% assign den = 40500 | minus: q %}{% assign sb = q | times: 4 | divided_by: den | times: sg %}
+{% assign mlon = mLp | plus: 360 | plus: 0.0 %}{% assign t1 = sa | times: 6.289 %}{% assign t2 = sb | times: 1.274 %}{% assign mlon = mlon | plus: t1 | plus: t2 | modulo: 360 %}
+{% assign sidx = mlon | divided_by: 30.0 | floor %}
+{% assign sm4 = sidx | modulo: 4 %}
+{% assign sign_names = "Aries,Taurus,Gemini,Cancer,Leo,Virgo,Libra,Scorpio,Sagittarius,Capricorn,Aquarius,Pisces" | split: "," %}
+{% assign el_names = "Fire,Earth,Air,Water" | split: "," %}
+{% assign msign = sign_names[sidx] %}{% assign mel = el_names[sm4] %}
+{% if mage < 14.77 %}{% assign waxing = true %}{% else %}{% assign waxing = false %}{% endif %}
+{% comment %}Traditional rules (folklore): leafy crops = waxing + water sign; root crops = waning + earth sign; pruning/cutting = waning + fire/air sign.{% endcomment %}
+{% assign r_leaf = "N" %}{% assign r_root = "N" %}{% assign r_cut = "N" %}
+{% if waxing %}{% if mel == "Water" %}{% assign r_leaf = "F" %}{% endif %}{% if mel == "Fire" or mel == "Air" %}{% assign r_root = "A" %}{% endif %}{% if mel == "Water" %}{% assign r_cut = "A" %}{% endif %}{% else %}{% if mel == "Fire" or mel == "Air" %}{% assign r_leaf = "A" %}{% assign r_cut = "F" %}{% endif %}{% if mel == "Earth" %}{% assign r_root = "F" %}{% endif %}{% endif %}
+{% comment %}Moon drawing (SVG): lit area = half circle + terminator ellipse, using cos of the phase angle.{% endcomment %}
+{% assign pdeg = mage | divided_by: 29.530588 | times: 360 | plus: 90 | modulo: 360 %}
+{% assign x = pdeg %}{% assign sg = 1 %}{% if x > 180 %}{% assign x = x | minus: 180 %}{% assign sg = -1 %}{% endif %}{% assign q = 180 | minus: x | times: x %}{% assign den = 40500 | minus: q %}{% assign cosp = q | times: 4 | divided_by: den | times: sg %}
+{% if cosp < 0 %}{% assign cabs = 0 | minus: cosp %}{% else %}{% assign cabs = cosp %}{% endif %}
+{% assign mrx = cabs | times: 22 | round: 1 %}
+{% if waxing %}{% assign s1 = 1 %}{% if cosp > 0 %}{% assign s2 = 0 %}{% else %}{% assign s2 = 1 %}{% endif %}{% else %}{% assign s1 = 0 %}{% if cosp > 0 %}{% assign s2 = 1 %}{% else %}{% assign s2 = 0 %}{% endif %}{% endif %}
+{% capture moon_svg %}<svg width="52" height="52" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#000"/><path d="M24 2 A22 22 0 0 {{ s1 }} 24 46 A{{ mrx }} 22 0 0 {{ s2 }} 24 2 Z" fill="#fff"/><circle cx="24" cy="24" r="22" fill="none" stroke="#000" stroke-width="2.5"/></svg>{% endcapture %}
+{% capture b_F %}<span style="background:#000;color:#fff;padding:0 8px;">FAVORABLE</span>{% endcapture %}
+{% capture b_N %}<span style="border:2px solid #000;padding:0 6px;">NEUTRAL</span>{% endcapture %}
+{% capture b_A %}<span style="border:2px dashed #000;padding:0 6px;text-decoration:line-through;">AVOID</span>{% endcapture %}
+{% assign proverbs = "Red sky at night, shepherd's delight; red sky at morning, shepherd's warning.|When the wind is in the east, 'tis neither good for man nor beast.|A sunshiny shower won't last half an hour.|Evening red and morning gray, help the traveler on his way.|Frost and fraud both end in foul.|If Candlemas Day be fair and bright, winter will have another flight.|Mackerel sky and mares' tails make tall ships carry low sails." | split: "|" %}
+{% assign pidx = today | modulo: 7 %}{% assign proverb = proverbs[pidx] %}
+{% assign zone = IDX_0.zone %}
+{% assign ev = '{"events":[{"n":"Order seeds + soil test","a":"o","w":-17},{"n":"Onions","a":"s","w":-12,"dp":"0.25"},{"n":"Leeks","a":"s","w":-12,"dp":"0.25"},{"n":"Peppers","a":"s","w":-8,"dp":"0.25"},{"n":"Eggplant","a":"s","w":-8,"dp":"0.25"},{"n":"Tomatoes","a":"s","w":-6,"dp":"0.25"},{"n":"Broccoli","a":"s","w":-6,"dp":"0.25"},{"n":"Cabbage","a":"s","w":-6,"dp":"0.25"},{"n":"Squash","a":"s","w":-2,"dp":"0.5"},{"n":"Peas","a":"d","w":-8,"dp":"1","sm":40},{"n":"Spinach","a":"d","w":-6,"dp":"0.5","sm":40},{"n":"Lettuce","a":"d","w":-6,"dp":"0.25","sm":40},{"n":"Onion sets","a":"t","w":-5,"dp":"1","sm":40},{"n":"Potatoes","a":"d","w":-4,"dp":"4","sm":45},{"n":"Carrots","a":"d","w":-4,"dp":"0.25","sm":45},{"n":"Beets","a":"d","w":-4,"dp":"0.5","sm":50},{"n":"Kale","a":"t","w":-4,"sm":40},{"n":"Broccoli","a":"t","w":-3,"sm":40},{"n":"Cabbage","a":"t","w":-3,"sm":40},{"n":"Beans","a":"d","w":1,"dp":"1","sm":60},{"n":"Corn","a":"d","w":1,"dp":"1.5","sm":60},{"n":"Cucumbers","a":"d","w":1,"dp":"1","sm":65},{"n":"Squash","a":"d","w":1,"dp":"1","sm":65},{"n":"Tomatoes","a":"t","w":1,"sm":60},{"n":"Peppers","a":"t","w":2,"sm":65},{"n":"Eggplant","a":"t","w":2,"sm":65},{"n":"Basil","a":"t","w":2,"sm":60},{"n":"Okra","a":"d","w":3,"dp":"0.5","sm":65},{"n":"Sweet potatoes","a":"t","w":3,"sm":65},{"n":"Pumpkins","a":"d","w":5,"dp":"1","sm":65},{"n":"Broccoli","a":"t","w":-12,"f":1},{"n":"Cabbage","a":"t","w":-12,"f":1},{"n":"Carrots","a":"d","w":-12,"f":1,"dp":"0.25"},{"n":"Beets","a":"d","w":-10,"f":1,"dp":"0.5"},{"n":"Kale","a":"d","w":-10,"f":1,"dp":"0.25"},{"n":"Collards","a":"t","w":-10,"f":1},{"n":"Lettuce","a":"d","w":-8,"f":1,"dp":"0.25"},{"n":"Spinach","a":"d","w":-6,"f":1,"dp":"0.5"},{"n":"Radishes","a":"d","w":-6,"f":1,"dp":"0.5"},{"n":"Cover crop (rye)","a":"d","w":-2,"f":1,"dp":"1"},{"n":"Garlic","a":"d","w":3,"f":1,"dp":"2"}]}' | parse_json %}
+{% assign now_n = 0 %}{% assign nd = 9999 %}{% assign nn = "" %}{% assign na = "" %}
+{% for e in ev.events %}{% if e.f == 1 %}{% assign anchor = ff %}{% else %}{% assign anchor = lf %}{% endif %}{% assign d = e.w | times: 7 | plus: anchor | minus: today %}{% if d < -14 %}{% assign d = d | plus: 365 %}{% endif %}{% if d >= -14 and d <= 6 %}{% assign now_n = now_n | plus: 1 %}{% endif %}{% if d >= 7 and d < nd %}{% assign nd = d %}{% assign nn = e.n %}{% assign na = e.a %}{% endif %}{% endfor %}
+{% case na %}{% when 's' %}{% assign nal = "Start indoors" %}{% when 't' %}{% assign nal = "Transplant" %}{% when 'd' %}{% assign nal = "Direct sow" %}{% else %}{% assign nal = "Plan" %}{% endcase %}
+{% assign nw = nd | divided_by: 7 %}

@@ -1,0 +1,41 @@
+{% capture moon_svg2 %}<svg width="40" height="40" viewBox="0 0 48 48"><clipPath id="lit"><path d="M24 2 A22 22 0 0 {{ s1 }} 24 46 A{{ mrx }} 22 0 0 {{ s2 }} 24 2 Z"/></clipPath><circle cx="24" cy="24" r="22" fill="#000"/><path d="M24 2 A22 22 0 0 {{ s1 }} 24 46 A{{ mrx }} 22 0 0 {{ s2 }} 24 2 Z" fill="#fff"/><g clip-path="url(#lit)" fill="none" stroke="#000" stroke-width="1.2"><circle cx="30" cy="14" r="3.5"/><circle cx="35" cy="26" r="4.5"/><circle cx="27" cy="36" r="3"/><circle cx="20" cy="22" r="2"/><circle cx="38" cy="36" r="2"/></g><circle cx="24" cy="24" r="22" fill="none" stroke="#000" stroke-width="2.5"/></svg>{% endcapture %}
+<style>
+.al{flex:1 0 auto;height:100%;min-height:404px;width:100%;overflow:hidden;display:flex;flex-direction:column;box-sizing:border-box;border:4px double #000;padding:2px 6px 0;font-family:Georgia,'Times New Roman','Liberation Serif','DejaVu Serif',serif;color:#000}
+.al *{box-sizing:border-box}
+.al-mast{text-align:center;border-bottom:2px solid #000;font-weight:700;text-transform:uppercase;letter-spacing:4px;padding-bottom:1px;font-size:20px}
+.al-hd{font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;text-align:center;border-bottom:1px solid #000;margin:8px 0 3px;padding-bottom:1px}
+.al-big{font-size:64px;font-weight:700;line-height:.95;text-align:center;letter-spacing:-1px}
+.al-cap{text-align:center;font-style:italic;font-size:13px}
+.al-cap b{font-style:normal}
+.al-note{margin:6px 0 2px;text-align:center;background:#000;color:#fff;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;padding:1px 0}
+.al-calm{background:#fff;color:#000;border:1px solid #000}
+.al-top{display:flex;gap:8px;margin-top:3px}
+.al-top>div{flex:1}
+.al-moonrow{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:6px}
+.al-moonrow div{font-weight:700;line-height:1.1;font-size:14px}
+.al-row{display:flex;align-items:baseline;margin:3px 0;font-size:16px}
+.al-dots{flex:1;border-bottom:2px dotted #000;margin:0 4px;transform:translateY(-2px)}
+.al-rt{font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:0 4px;font-size:13px}
+.al-best{background:#000;color:#fff}.al-fair{border:1px solid #000}.al-shun{text-decoration:line-through}
+.al-item b{display:block;line-height:1.1;font-size:18px}.al-item span{font-style:italic;font-size:13px}
+.al-up{display:flex;align-items:baseline;font-size:15px;margin:1px 0}
+.al-x{display:none}
+@media (min-width:500px){.al{zoom:1.3}.al-item.al-x{display:block}.al-up.al-x{display:flex}.al-row{margin:7px 0}.al-hd{margin-top:14px}.al-item{margin-bottom:6px}}
+</style>
+<div class="layout layout--col">
+<div class="al">
+ <div class="al-mast">Garden Almanac</div>
+ <div class="al-top"><div style="border-right:1px solid #000;padding-right:6px"><div class="al-big">{{ hero_n }}</div><div class="al-cap">days to {{ hero_label | downcase }}<br><b>{{ hero_date }}</b></div></div>
+ <div>{% if frost_alert != "" %}<div class="al-note">{{ frost_alert }}</div>{% else %}<div class="al-note al-calm">{{ frost_state }}</div>{% endif %}{% if wx_line != "" %}<div style="text-align:center;font-size:13px">{{ wx_line }}</div>{% endif %}<div class="al-moonrow">{{ moon_svg2 }}<div>{{ moon }}</div></div></div></div>
+ <div class="al-hd">Best Days &middot; {{ msign }} ({{ mel }})</div>
+ <div class="al-row">Leafy crops<span class="al-dots"></span>{% case r_leaf %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div>
+ <div class="al-row">Root crops<span class="al-dots"></span>{% case r_root %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div>
+ <div class="al-row">Prune &amp; cut<span class="al-dots"></span>{% case r_cut %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div>
+ <div class="al-hd">Plant Now</div>
+ {% if now_n == 0 %}<div class="al-item"><b>Rest the beds</b><span>Nothing due for two weeks</span></div>{% endif %}
+ {% assign c = 0 %}{% for e in ev.events %}{% if e.f == 1 %}{% assign anchor = ff %}{% else %}{% assign anchor = lf %}{% endif %}{% assign d = e.w | times: 7 | plus: anchor | minus: today %}{% if d < -14 %}{% assign d = d | plus: 365 %}{% endif %}{% if d >= -14 and d <= 6 and c < 4 %}{% assign c = c | plus: 1 %}<div class="al-item{% if c > 2 %} al-x{% endif %}"><b>{{ e.n }}</b><span>{% case e.a %}{% when 's' %}Start indoors{% when 't' %}Transplant{% when 'd' %}Direct sow{% else %}Plan{% endcase %}{% if e.dp %}, {{ e.dp }} in deep{% endif %}{% if e.sm and soil_i != nil %}{% if soil_i >= e.sm %} &middot; soil ok{% else %} &middot; soil too cold{% endif %}{% endif %}</span></div>{% endif %}{% endfor %}
+ <div class="al-hd">Coming Up</div>
+ {% assign c = 0 %}{% for e in ev.events %}{% if e.f == 1 %}{% assign anchor = ff %}{% else %}{% assign anchor = lf %}{% endif %}{% assign d = e.w | times: 7 | plus: anchor | minus: today %}{% if d < -14 %}{% assign d = d | plus: 365 %}{% endif %}{% if d >= 7 and d <= 60 and c < 5 %}{% assign c = c | plus: 1 %}{% assign eday = d | plus: today | minus: 1 | times: 86400 | plus: jan1 %}<div class="al-up{% if c > 3 %} al-x{% endif %}">{{ e.n }}<span class="al-dots"></span>{{ eday | date: "%b %-d" }}</div>{% endif %}{% endfor %}
+</div>
+</div>
+<div class="title_bar"><span class="title">Garden Almanac</span><span class="instance">{{ ts | date: "%b %-d" }}</span></div>
