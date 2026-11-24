@@ -1,45 +1,54 @@
 ---
-# Placeholders only. Replace YOUR_GITHUB_USER after publishing the data site (see README).
-name: Farmer's Almanac
-description: What to plant when
 strategy: polling
-refresh_interval: 1440
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
 polling_verb: get
-# Two URLs, one per line. Data arrives as IDX_0 (NOAA frost dates) and IDX_1 (Open-Meteo weather, optional).
+framework_version: 3.4.7
+serverless_language: ''
+refresh_interval_floor: '1440'
 polling_url: |-
   https://YOUR_GITHUB_USER.github.io/trmnl-farmers-almanac/frost/{{ zip }}.json
   https://api.open-meteo.com/v1/forecast?latitude={{ latitude }}&longitude={{ longitude }}&daily=temperature_2m_min,sunrise,sunset&hourly=soil_temperature_6cm&forecast_hours=1&forecast_days=2&temperature_unit=fahrenheit&timezone=auto
+polling_headers: ''
+polling_body: ''
+id: 550191
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
 custom_fields:
-  - keyname: zip
-    field_type: string
-    name: ZIP code
-    description: US ZIP code used to look up average frost dates.
-    default: '65101'
-  - keyname: latitude
-    field_type: string
-    name: Latitude
-    description: Decimal degrees, used for tonight's low, soil temperature and sunrise/sunset.
-    default: '38.58'
-  - keyname: longitude
-    field_type: string
-    name: Longitude
-    description: Decimal degrees (negative in the US).
-    default: '-92.17'
-  - keyname: region_label
-    field_type: string
-    name: Location label (optional)
-    description: Shown in the title bar. Blank uses the nearest weather station name.
-    default: ''
-    optional: true
-  - keyname: last_frost_override
-    field_type: string
-    name: Last spring frost override (MM-DD, optional)
-    description: Leave blank to use NOAA averages for your ZIP.
-    default: ''
-    optional: true
-  - keyname: first_frost_override
-    field_type: string
-    name: First fall frost override (MM-DD, optional)
-    description: Leave blank to use NOAA averages for your ZIP.
-    default: ''
-    optional: true
+- keyname: zip
+  field_type: string
+  name: ZIP code
+  description: US ZIP code used to look up average frost dates.
+  default: '65101'
+- keyname: latitude
+  field_type: string
+  name: Latitude
+  description: Decimal degrees, used for tonight's low, soil temperature and sunrise/sunset.
+  default: '38.58'
+- keyname: longitude
+  field_type: string
+  name: Longitude
+  description: Decimal degrees (negative in the US).
+  default: "-92.17"
+- keyname: region_label
+  field_type: string
+  name: Location label (optional)
+  description: Shown in the title bar. Blank uses the nearest weather station name.
+  default: ''
+  optional: true
+- keyname: last_frost_override
+  field_type: string
+  name: Last spring frost override (MM-DD, optional)
+  description: Leave blank to use NOAA averages for your ZIP.
+  default: ''
+  optional: true
+- keyname: first_frost_override
+  field_type: string
+  name: First fall frost override (MM-DD, optional)
+  description: Leave blank to use NOAA averages for your ZIP.
+  default: ''
+  optional: true
+name: Farmer's Almanac
+description: What to plant when
+refresh_interval: 1440
