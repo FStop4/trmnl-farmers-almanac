@@ -21,7 +21,7 @@
  <div class="al-mast">Almanac</div>
  <div class="al-top"><div style="border-right:1px solid #000;padding-right:6px"><div class="al-big">{{ hero_n }}</div><div class="al-cap">days to {{ hero_label | downcase }}<br>{{ hero_date }}</div></div>
  <div>{% if frost_alert != "" %}<div class="al-note">{{ frost_alert }}</div>{% else %}<div class="al-note al-calm">{{ frost_state }}</div>{% endif %}
- <div class="al-moonrow">{{ moon_svg2 }}<div>{{ msign }}<i>Root: {% case r_root %}{% when 'F' %}Best{% when 'A' %}Shun{% else %}Fair{% endcase %}</i></div></div>
+ <div class="al-moonrow">{{ moon_svg2 }}<div>{{ msign }}{% unless r_root == 'A' %}<i>Root: {% if r_root == 'F' %}Best{% else %}Fair{% endif %}</i>{% endunless %}</div></div>
  {% assign c = 0 %}{% for e in ev.events %}{% if e.f == 1 %}{% assign anchor = ff %}{% else %}{% assign anchor = lf %}{% endif %}{% assign d = e.w | times: 7 | plus: anchor | minus: today %}{% if d < -14 %}{% assign d = d | plus: 365 %}{% endif %}{% if d >= -14 and d <= 6 and c < 1 %}{% assign c = c | plus: 1 %}<div class="al-pl"><b>{{ e.n }}</b><span>{% case e.a %}{% when 's' %}Start indoors{% when 't' %}Transplant{% when 'd' %}Direct sow{% else %}Plan{% endcase %}{% if e.dp %}, {{ e.dp }} in deep{% endif %}</span></div>{% endif %}{% endfor %}
  {% if now_n == 0 %}<div class="al-pl"><b>{{ nn }}</b><span>{{ nal }} &middot; {{ nw }} wk</span></div>{% endif %}</div></div>
 </div>

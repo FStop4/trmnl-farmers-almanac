@@ -37,7 +37,6 @@
 .al-rt{font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;padding:0 6px}
 .al-best{background:#000;color:#fff}
 .al-fair{border:1px solid #000}
-.al-shun{text-decoration:line-through}
 .al-nm{font-size:14px;text-align:center;margin-top:auto;padding-top:5px;line-height:1.25}
 .al-foot{font-size:13px;font-style:italic;text-align:center;margin-top:5px}
 .al-item{margin:0 0 5px}
@@ -64,9 +63,9 @@
    {% if season_txt != "" %}<div class="al-bar"><small>Growing season &middot; {{ sdays }} days</small><div class="al-track"><div class="al-fill" style="width:{{ pct }}%"></div></div><em>{{ season_txt }}</em></div>{% endif %}</div>
   <div class="al-col"><div class="al-hd">The Moon&rsquo;s Sign</div>
    <div class="al-moonrow">{{ moon_svg2 }}<div>{{ moon }}<i>in {{ msign }} &middot; {{ mel }}</i></div></div>
-   <div class="al-row">Leafy crops<span class="al-dots"></span>{% case r_leaf %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div>
-   <div class="al-row">Root crops<span class="al-dots"></span>{% case r_root %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div>
-   <div class="al-row">Prune &amp; cut<span class="al-dots"></span>{% case r_cut %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div>
+   {% unless r_leaf == 'A' %}<div class="al-row">Leafy crops<span class="al-dots"></span>{% if r_leaf == 'F' %}<span class="al-rt al-best">Best</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endif %}</div>{% endunless %}
+   {% unless r_root == 'A' %}<div class="al-row">Root crops<span class="al-dots"></span>{% if r_root == 'F' %}<span class="al-rt al-best">Best</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endif %}</div>{% endunless %}
+   {% unless r_cut == 'A' %}<div class="al-row">Prune &amp; cut<span class="al-dots"></span>{% if r_cut == 'F' %}<span class="al-rt al-best">Best</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endif %}</div>{% endunless %}
    <div class="al-nm">Next full moon about {{ nf_s | date: "%b %-d" }}<br>Next new moon about {{ nw_s | date: "%b %-d" }}</div>
    <div class="al-foot">Traditional moon lore, not science</div></div>
   <div class="al-col"><div class="al-hd">Plant Now</div>

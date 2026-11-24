@@ -17,7 +17,7 @@
 .al-row{display:flex;align-items:baseline;margin:2px 0;font-size:15px}
 .al-dots{flex:1;border-bottom:2px dotted #000;margin:0 4px;transform:translateY(-2px)}
 .al-rt{font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:0 4px;font-size:13px}
-.al-best{background:#000;color:#fff}.al-fair{border:1px solid #000}.al-shun{text-decoration:line-through}
+.al-best{background:#000;color:#fff}.al-fair{border:1px solid #000}
 .al-item b{display:block;line-height:1.1;font-size:17px}.al-item span{font-style:italic;font-size:13px}
 .al-up{display:flex;align-items:baseline;font-size:14px;margin:1px 0}
 @media (min-width:1000px){.al{zoom:1.3}.al-big{font-size:70px}}
@@ -26,9 +26,9 @@
 <div class="al"><div class="al-body">
  <div class="al-col"><div class="al-hd">Frost Reckoning</div><div class="al-big">{{ hero_n }}</div><div class="al-cap">days to {{ hero_label | downcase }} &middot; <b>{{ hero_date }}</b></div>{% if frost_alert != "" %}<div class="al-note">{{ frost_alert }}</div>{% else %}<div class="al-note al-calm">{{ frost_state }}</div>{% endif %}</div>
  <div class="al-col"><div class="al-hd">The Moon&rsquo;s Sign</div><div class="al-moonrow">{{ moon_svg2 }}<div>{{ moon }}<i>in {{ msign }} &middot; {{ mel }}</i></div></div>
-  <div class="al-row">Leafy crops<span class="al-dots"></span>{% case r_leaf %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div>
-  <div class="al-row">Root crops<span class="al-dots"></span>{% case r_root %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div>
-  <div class="al-row">Prune &amp; cut<span class="al-dots"></span>{% case r_cut %}{% when 'F' %}<span class="al-rt al-best">Best</span>{% when 'A' %}<span class="al-rt al-shun">Shun</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endcase %}</div></div>
+  {% unless r_leaf == 'A' %}<div class="al-row">Leafy crops<span class="al-dots"></span>{% if r_leaf == 'F' %}<span class="al-rt al-best">Best</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endif %}</div>{% endunless %}
+  {% unless r_root == 'A' %}<div class="al-row">Root crops<span class="al-dots"></span>{% if r_root == 'F' %}<span class="al-rt al-best">Best</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endif %}</div>{% endunless %}
+  {% unless r_cut == 'A' %}<div class="al-row">Prune &amp; cut<span class="al-dots"></span>{% if r_cut == 'F' %}<span class="al-rt al-best">Best</span>{% else %}<span class="al-rt al-fair">Fair</span>{% endif %}</div>{% endunless %}</div>
  <div class="al-col"><div class="al-hd">Plant Now</div>
   {% if now_n == 0 %}<div class="al-item"><b>Rest the beds</b><span>Nothing due for two weeks</span></div>{% endif %}
   {% assign c = 0 %}{% for e in ev.events %}{% if e.f == 1 %}{% assign anchor = ff %}{% else %}{% assign anchor = lf %}{% endif %}{% assign d = e.w | times: 7 | plus: anchor | minus: today %}{% if d < -14 %}{% assign d = d | plus: 365 %}{% endif %}{% if d >= -14 and d <= 6 and c < 1 %}{% assign c = c | plus: 1 %}<div class="al-item"><b>{{ e.n }}</b><span>{% case e.a %}{% when 's' %}Start indoors{% when 't' %}Transplant{% when 'd' %}Direct sow{% else %}Plan{% endcase %}{% if e.dp %}, {{ e.dp }} in deep{% endif %}</span></div>{% endif %}{% endfor %}
