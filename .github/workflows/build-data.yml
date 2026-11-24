@@ -20,6 +20,7 @@ jobs:
           python-version: "3.12"
       - run: pip install numpy scipy
       - run: python data/build.py --out site
+      - run: mkdir -p site/photos && cp photos/*.png site/photos/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
