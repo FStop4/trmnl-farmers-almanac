@@ -7,7 +7,7 @@ polling_verb: get
 framework_version: 3.4.7
 serverless_language: ''
 refresh_interval_floor: '1440'
-polling_url: "https://YOUR_GITHUB_USER.github.io/trmnl-farmers-almanac/frost/{{ zip }}.json\r\nhttps://api.open-meteo.com/v1/forecast?latitude={{ latitude }}&longitude={{ longitude }}&daily=temperature_2m_min,sunrise,sunset&hourly=soil_temperature_6cm&forecast_hours=1&forecast_days=2&temperature_unit=fahrenheit&timezone=auto"
+polling_url: "https://github.com/FStop4/trmnl-farmers-almanac/frost/{{ zip }}.json\r\nhttps://api.open-meteo.com/v1/forecast?latitude={{ latitude }}&longitude={{ longitude }}&daily=temperature_2m_min,sunrise,sunset&hourly=soil_temperature_6cm&forecast_hours=1&forecast_days=2&temperature_unit=fahrenheit&timezone=auto"
 polling_headers: ''
 polling_body: ''
 id: 550191
