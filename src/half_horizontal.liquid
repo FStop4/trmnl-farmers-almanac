@@ -20,6 +20,8 @@
 .al-best{background:#000;color:#fff}.al-fair{border:1px solid #000}.al-shun{text-decoration:line-through}
 .al-item b{display:block;line-height:1.1;font-size:17px}.al-item span{font-style:italic;font-size:13px}
 .al-up{display:flex;align-items:baseline;font-size:14px;margin:1px 0}
+.al-phcol{flex:0 0 136px;align-items:center;justify-content:center;padding:3px 4px}
+.al-ph{display:block;width:128px;height:144px;outline:1px solid #000;image-rendering:pixelated}
 @media (min-width:1000px){.al{zoom:1.3}.al-big{font-size:70px}}
 </style>
 <div class="layout layout--col">
@@ -34,6 +36,7 @@
   {% assign c = 0 %}{% for e in ev.events %}{% if e.f == 1 %}{% assign anchor = ff %}{% else %}{% assign anchor = lf %}{% endif %}{% assign d = e.w | times: 7 | plus: anchor | minus: today %}{% if d < -14 %}{% assign d = d | plus: 365 %}{% endif %}{% if d >= -14 and d <= 6 and c < 1 %}{% assign c = c | plus: 1 %}<div class="al-item"><b>{{ e.n }}</b><span>{% case e.a %}{% when 's' %}Start indoors{% when 't' %}Transplant{% when 'd' %}Direct sow{% else %}Plan{% endcase %}{% if e.dp %}, {{ e.dp }} in deep{% endif %}</span></div>{% endif %}{% endfor %}
   <div class="al-hd" style="margin-top:5px">Coming Up</div>
   {% assign c = 0 %}{% for e in ev.events %}{% if e.f == 1 %}{% assign anchor = ff %}{% else %}{% assign anchor = lf %}{% endif %}{% assign d = e.w | times: 7 | plus: anchor | minus: today %}{% if d < -14 %}{% assign d = d | plus: 365 %}{% endif %}{% if d >= 7 and d <= 60 and c < 2 %}{% assign c = c | plus: 1 %}{% assign eday = d | plus: today | minus: 1 | times: 86400 | plus: jan1 %}<div class="al-up">{{ e.n }}<span class="al-dots"></span>{{ eday | date: "%b %-d" }}</div>{% endif %}{% endfor %}</div>
+ {% if pbase != "" %}<div class="al-col al-phcol"><img class="al-ph" src="{{ pbase }}/photos/farm-{{ pn }}-tall.png" width="128" height="144" alt=""></div>{% endif %}
 </div></div>
 </div>
 <div class="title_bar"><span class="title">Garden Almanac</span><span class="instance">{{ place }} · {{ ts | date: "%b %-d" }}</span></div>

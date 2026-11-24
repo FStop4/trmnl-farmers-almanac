@@ -43,3 +43,9 @@ custom_fields:
     description: Leave blank to use NOAA averages for your ZIP.
     default: ''
     optional: true
+  - keyname: photo_base_url
+    field_type: string
+    name: Photo base URL (optional)
+    description: Your published data site, no trailing slash (e.g. https://YOUR_GITHUB_USER.github.io/trmnl-farmers-almanac). Blank hides the farm photos.
+    default: ''
+    optional: true

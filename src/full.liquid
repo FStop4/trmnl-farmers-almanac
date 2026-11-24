@@ -49,11 +49,13 @@
 .al-wis{text-align:center;padding:4px 20px 3px;font-size:17px;font-style:italic;line-height:1.2}
 .al-wis small{display:block;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-style:normal}
 .al-x{display:none}
+.al-mphoto{display:flex;align-items:center;gap:8px}.al-mt{flex:1;min-width:0}
+.al-ph{flex:none;display:block;width:128px;height:60px;outline:1px solid #000;image-rendering:pixelated}
 @media (min-width:1000px){.al{zoom:1.3}.al-item.al-x{display:block}.al-up.al-x{display:flex}.al-big{font-size:112px}.al-row{margin:9px 0}.al-item{margin-bottom:9px}.al-moonrow svg{width:70px;height:70px}.al-note{margin:12px 0 6px}}
 </style>
 <div class="layout layout--col">
 <div class="al">
- <div class="al-mast"><h1>The Garden Almanac</h1><p>{{ ts | date: "%A, %B %-d" }} &middot; {{ place }}</p><div class="al-anno">Anno {{ yr }} &middot; Day {{ today }}</div></div>
+ <div class="al-mast{% if pbase != "" %} al-mphoto{% endif %}">{% if pbase != "" %}<img class="al-ph" src="{{ pbase }}/photos/farm-{{ pn }}-wide.png" width="128" height="60" alt="">{% endif %}<div class="al-mt"><h1>The Garden Almanac</h1><p>{{ ts | date: "%A, %B %-d" }} &middot; {{ place }}</p><div class="al-anno">Anno {{ yr }} &middot; Day {{ today }}</div></div>{% if pbase != "" %}<img class="al-ph" src="{{ pbase }}/photos/farm-{{ pn2 }}-wide.png" width="128" height="60" alt="">{% endif %}</div>
  <div class="al-body">
   <div class="al-col"><div class="al-hd">Frost Reckoning</div>
    <div class="al-big">{{ hero_n }}</div><div class="al-cap">days to {{ hero_label | downcase }} &middot; <b>{{ hero_date }}</b></div>

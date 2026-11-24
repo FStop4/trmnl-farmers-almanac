@@ -10,6 +10,10 @@
 {% assign st_state = sp[1] | remove: " Us" | remove: " US" | strip | upcase %}
 {% if st_state != blank %}{% assign st_full = st_name | append: ", " | append: st_state %}{% else %}{% assign st_full = st_name %}{% endif %}
 {% assign place = cf.region_label | default: st_full | default: "Your area" %}
+{% comment %}Optional farm photo: blank photo_base_url = no photo. One of 3 photos per day, by day of year.{% endcomment %}
+{% assign pbase = cf.photo_base_url | default: "" | strip %}
+{% assign pn = today | modulo: 3 | plus: 1 %}
+{% assign pn2 = pn | modulo: 3 | plus: 1 %}
 {% assign lf = yr | append: "-" | append: lfv | date: "%j" | plus: 0 %}
 {% assign ff = yr | append: "-" | append: ffv | date: "%j" | plus: 0 %}
 {% assign lfd = yr | append: "-" | append: lfv | date: "%b %-d" %}
