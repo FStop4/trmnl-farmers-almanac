@@ -23,7 +23,7 @@
  <div>{% if frost_alert != "" %}<div class="al-note">{{ frost_alert }}</div>{% else %}<div class="al-note al-calm">{{ frost_state }}</div>{% endif %}
  <div class="al-moonrow">{{ moon_svg2 }}<div>{{ msign }}{% unless r_root == 'A' %}<i>Root: {% if r_root == 'F' %}Best{% else %}Fair{% endif %}</i>{% endunless %}</div></div>
  {% assign c = 0 %}{% for e in ev.events %}{% if e.f == 1 %}{% assign anchor = ff %}{% else %}{% assign anchor = lf %}{% endif %}{% assign d = e.w | times: 7 | plus: anchor | minus: today %}{% if d < -14 %}{% assign d = d | plus: 365 %}{% endif %}{% if d >= -14 and d <= 6 and c < 1 %}{% assign c = c | plus: 1 %}<div class="al-pl"><b>{{ e.n }}</b><span>{% case e.a %}{% when 's' %}Start indoors{% when 't' %}Transplant{% when 'd' %}Direct sow{% else %}Plan{% endcase %}{% if e.dp %}, {{ e.dp }} in deep{% endif %}</span></div>{% endif %}{% endfor %}
- {% if now_n == 0 %}<div class="al-pl"><b>{{ nn }}</b><span>{{ nal }} &middot; {{ nw }} wk</span></div>{% endif %}</div></div>
+ {% if now_n == 0 %}<div class="al-pl"><b>Relax, there is nothing to plant today.</b></div>{% endif %}</div></div>
 </div>
 </div>
 <div class="title_bar"><span class="title">Almanac</span></div>
